@@ -3,10 +3,9 @@ const sharedStylesText = `
   :host {
     flex-shrink: 0;
     display: block;
-
-    svg {
-      display: block;
-    }
+  }
+  svg {
+    display: block;
   }
 `;
 
