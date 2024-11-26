@@ -1,0 +1,13 @@
+{
+  "name": "kk-web-components",
+  "version": "1.0.5",
+  "description": "A collection of reusable web components, including ui-icon and others.",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "type": "module",
+  "keywords": ["web-components", "ui-icon", "custom-elements", "svg"],
+  "author": "Krankikom GmbH",
+  "scripts": {
+    "test": "echo \"No tests specified\" && exit 0"
+  }
+}
