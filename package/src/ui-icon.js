@@ -1,7 +1,5 @@
-// Define a shared stylesheet using Constructable Stylesheets
-const sharedStyles = new CSSStyleSheet();
-
-sharedStyles.replaceSync(`
+// Define shared styles as a string
+const sharedStylesText = `
   :host {
     flex-shrink: 0;
     display: block;
@@ -10,14 +8,27 @@ sharedStyles.replaceSync(`
       display: block;
     }
   }
-`);
+`;
+
+// Create a constructable stylesheet if supported
+const sharedStyles = new CSSStyleSheet();
+sharedStyles.replaceSync(sharedStylesText);
 
 class UiIcon extends HTMLElement {
   constructor() {
     super();
-    // Attach Shadow DOM and apply shared styles
+    // Attach Shadow DOM
     const shadow = this.attachShadow({ mode: "open" });
-    shadow.adoptedStyleSheets = [sharedStyles];
+
+    // Apply styles
+    if (shadow.adoptedStyleSheets) {
+      shadow.adoptedStyleSheets = [sharedStyles];
+    } else {
+      // Fallback for browsers without adoptedStyleSheets (e.g., Safari)
+      const style = document.createElement('style');
+      style.textContent = sharedStylesText; // Use the same shared styles text
+      shadow.appendChild(style);
+    }
   }
 
   connectedCallback() {
