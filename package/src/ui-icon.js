@@ -1,101 +1,84 @@
-// Define shared styles as a string
-const sharedStylesText = `
-  :host {
-    flex-shrink: 0;
-    display: block;
-  }
-  svg {
-    display: block;
-  }
-`;
+let config = {
+  version: Date.now(),
+  filePath: "/assets/iconset.svg",
+  defaultSize: 24,
+};
 
-// Create a constructable stylesheet if supported
-const sharedStyles = new CSSStyleSheet();
-sharedStyles.replaceSync(sharedStylesText);
+export function defineUiIcon(userConfig = {}) {
+  config = { ...config, ...userConfig };
+
+  if (!customElements.get("ui-icon")) {
+    customElements.define("ui-icon", UiIcon);
+  }
+}
 
 class UiIcon extends HTMLElement {
   constructor() {
     super();
-    // Attach Shadow DOM
-    const shadow = this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: "open" });
 
-    // Apply styles
-    if (shadow.adoptedStyleSheets) {
-      shadow.adoptedStyleSheets = [sharedStyles];
+    if (this.shadowRoot.adoptedStyleSheets) {
+      this.shadowRoot.adoptedStyleSheets = [sharedStyles];
     } else {
-      // Fallback for browsers without adoptedStyleSheets (e.g., Safari)
-      const style = document.createElement('style');
-      style.textContent = sharedStylesText; // Use the same shared styles text
-      shadow.appendChild(style);
+      const style = document.createElement("style");
+      style.textContent = sharedStylesText;
+      this.shadowRoot.appendChild(style);
     }
   }
 
   connectedCallback() {
-    const config = window.UiIcon;
-    const urlParametersObj = {};
-    let filepath = "/assets/iconset.svg";
-    let defaultSize = 24;
+    this.render();
+  }
 
-    if (config) {
-      if (config.version) {
-        urlParametersObj["v"] = config.version;
-      }
-      if (config.filePath) {
-        filepath = config.filePath;
-      }
-      if (config.defaultSize) {
-        defaultSize = config.defaultSize;
-      }
-    }
-
-    // Get all attributes with defaults
+  render() {
     const options = this.getOptions({
       name: null,
-      size: defaultSize,
+      icon: null,
+      size: config.defaultSize,
       rotation: 0,
       viewbox: null,
     });
 
-    const { name, size, rotation, viewbox } = options;
+    const iconName = options.icon || options.name;
+
+    if (options.name && !options.icon) {
+      console.warn(`[ui-icon] Attribute "name" is deprecated. Use "icon" instead.`);
+    }
+
+    const { size, rotation, viewbox } = options;
 
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-
-    // Hide from screen readers
     svg.setAttribute("aria-hidden", "true");
-    svg.setAttribute("part", "icon"); // Expose svg for styling
+    svg.setAttribute("part", "icon");
 
-    // Validate values
-    const isValidSize = Number.isInteger(size) && size > 0;
+    const isValidSize = Number.isFinite(size) && size > 0;
     const isValidViewbox = viewbox && /^(\d+(\.\d+)?\s){3}\d+(\.\d+)?$/.test(viewbox);
     const isValidRotation = !isNaN(parseFloat(rotation));
-  
+
     if (isValidViewbox) {
       svg.setAttribute("viewBox", viewbox);
+      svg.setAttribute("width", size);
+      svg.setAttribute("height", size);
     } else if (isValidSize) {
       svg.setAttribute("width", size);
       svg.setAttribute("height", size);
     }
+
     if (isValidRotation) {
       svg.style.transform = `rotate(${rotation}deg)`;
     }
 
     const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
-    if (Object.keys(urlParametersObj).length > 0) {
-      const urlParameters = `?${Object.entries(urlParametersObj)
-        .map(([key, value]) => `${key}=${value}`)
-        .join("&")}`;
-      use.setAttribute("href", `${filepath}${urlParameters}#${name}`);
-    } else {
-      use.setAttribute("href", `${filepath}#${name}`);
-    }
+    const encodedIconName = encodeURIComponent(iconName || "");
+    const urlParams = `?v=${encodeURIComponent(config.version)}`;
 
+    use.setAttribute("href", `${config.filePath}${urlParams}#${encodedIconName}`);
     svg.appendChild(use);
 
-    this.shadowRoot.innerHTML = ""; // Clear old content
+    this.shadowRoot.innerHTML = "";
     this.shadowRoot.appendChild(svg);
   }
 
-  // Utility to get attributes with defaults
   getOptions(defaults) {
     return Object.keys(defaults).reduce((acc, key) => {
       const value = this.getAttribute(key);
@@ -109,20 +92,26 @@ class UiIcon extends HTMLElement {
     }, {});
   }
 
-  // Observe relevant attributes
   static get observedAttributes() {
-    return ["name", "size", "rotation", "viewbox"];
+    return ["name", "icon", "size", "rotation", "viewbox"];
   }
 
-  // Handle attribute changes
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue !== newValue) {
-      this.connectedCallback();
+      this.render();
     }
   }
 }
 
-// Register the custom element
-customElements.define("ui-icon", UiIcon);
+const sharedStylesText = `
+  :host {
+    flex-shrink: 0;
+    display: block;
+  }
+  svg {
+    display: block;
+  }
+`;
 
-export default UiIcon;
+const sharedStyles = new CSSStyleSheet();
+sharedStyles.replaceSync(sharedStylesText);
