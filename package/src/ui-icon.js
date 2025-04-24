@@ -1,26 +1,26 @@
 let config = {
   version: Date.now(),
-  filePath: "/assets/iconset.svg",
+  filePath: '/assets/iconset.svg',
   defaultSize: 24,
 };
 
 export function defineUiIcon(userConfig = {}) {
   config = { ...config, ...userConfig };
 
-  if (!customElements.get("ui-icon")) {
-    customElements.define("ui-icon", UiIcon);
+  if (!customElements.get('ui-icon')) {
+    customElements.define('ui-icon', UiIcon);
   }
 }
 
 class UiIcon extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: 'open' });
 
     if (this.shadowRoot.adoptedStyleSheets) {
       this.shadowRoot.adoptedStyleSheets = [sharedStyles];
     } else {
-      const style = document.createElement("style");
+      const style = document.createElement('style');
       style.textContent = sharedStylesText;
       this.shadowRoot.appendChild(style);
     }
@@ -41,41 +41,42 @@ class UiIcon extends HTMLElement {
 
     const iconName = options.icon || options.name;
 
-    if (options.name && !options.icon) {
+    if (options.name && !options.icon && !window.UiIconDeprecationWarningAttrNameSent) {
       console.warn(`[ui-icon] Attribute "name" is deprecated. Use "icon" instead.`);
+      window.UiIconDeprecationWarningAttrNameSent = true;
     }
 
     const { size, rotation, viewbox } = options;
 
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("aria-hidden", "true");
-    svg.setAttribute("part", "icon");
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('part', 'icon');
 
     const isValidSize = Number.isFinite(size) && size > 0;
     const isValidViewbox = viewbox && /^(\d+(\.\d+)?\s){3}\d+(\.\d+)?$/.test(viewbox);
     const isValidRotation = !isNaN(parseFloat(rotation));
 
     if (isValidViewbox) {
-      svg.setAttribute("viewBox", viewbox);
-      svg.setAttribute("width", size);
-      svg.setAttribute("height", size);
+      svg.setAttribute('viewBox', viewbox);
+      svg.setAttribute('width', size);
+      svg.setAttribute('height', size);
     } else if (isValidSize) {
-      svg.setAttribute("width", size);
-      svg.setAttribute("height", size);
+      svg.setAttribute('width', size);
+      svg.setAttribute('height', size);
     }
 
     if (isValidRotation) {
       svg.style.transform = `rotate(${rotation}deg)`;
     }
 
-    const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
-    const encodedIconName = encodeURIComponent(iconName || "");
+    const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    const encodedIconName = encodeURIComponent(iconName || '');
     const urlParams = `?v=${encodeURIComponent(config.version)}`;
 
-    use.setAttribute("href", `${config.filePath}${urlParams}#${encodedIconName}`);
+    use.setAttribute('href', `${config.filePath}${urlParams}#${encodedIconName}`);
     svg.appendChild(use);
 
-    this.shadowRoot.innerHTML = "";
+    this.shadowRoot.innerHTML = '';
     this.shadowRoot.appendChild(svg);
   }
 
@@ -84,7 +85,7 @@ class UiIcon extends HTMLElement {
       const value = this.getAttribute(key);
       acc[key] =
         value !== null
-          ? typeof defaults[key] === "number"
+          ? typeof defaults[key] === 'number'
             ? parseFloat(value)
             : value
           : defaults[key];
@@ -93,7 +94,7 @@ class UiIcon extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ["name", "icon", "size", "rotation", "viewbox"];
+    return ['name', 'icon', 'size', 'rotation', 'viewbox'];
   }
 
   attributeChangedCallback(name, oldValue, newValue) {

@@ -1,2 +1,6 @@
 import { defineUiIcon } from "./ui-icon.js";
-export { defineUiIcon };
+
+const UiIcon = defineUiIcon();
+
+export { UiIcon, defineUiIcon };
+
