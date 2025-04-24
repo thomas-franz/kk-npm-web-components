@@ -95,10 +95,16 @@ class UiIcon extends HTMLElement {
     this.shadowRoot.appendChild(svg);
   }
 
-  // Utility to get attributes with defaults
+  // Utility to get attributes with defaults, supporting icon as alias for name
   getOptions(defaults) {
     return Object.keys(defaults).reduce((acc, key) => {
-      const value = this.getAttribute(key);
+      let value = this.getAttribute(key);
+
+      // Backwards compatibility: treat "icon" as alias for "name"
+      if (key === "name") {
+        value = this.getAttribute("icon") ?? this.getAttribute("name");
+      }
+
       acc[key] =
         value !== null
           ? typeof defaults[key] === "number"
@@ -111,7 +117,7 @@ class UiIcon extends HTMLElement {
 
   // Observe relevant attributes
   static get observedAttributes() {
-    return ["name", "size", "rotation", "viewbox"];
+    return ["name", "icon", "size", "rotation", "viewbox"];
   }
 
   // Handle attribute changes
