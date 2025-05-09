@@ -23,7 +23,6 @@ class UiIcon extends HTMLElement {
   }
 
   render() {
-    console.log(window.UiIcon);
     const config = {
       ...defaultConfig,
       ...(window.UiIcon || {}),
