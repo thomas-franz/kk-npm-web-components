@@ -1,16 +1,8 @@
-let config = {
+const defaultConfig = {
   version: Date.now(),
   filePath: '/assets/iconset.svg',
   defaultSize: 24,
 };
-
-export function defineUiIcon(userConfig = {}) {
-  config = { ...config, ...userConfig };
-
-  if (!customElements.get('ui-icon')) {
-    customElements.define('ui-icon', UiIcon);
-  }
-}
 
 class UiIcon extends HTMLElement {
   constructor() {
@@ -31,6 +23,12 @@ class UiIcon extends HTMLElement {
   }
 
   render() {
+    console.log(window.UiIcon);
+    const config = {
+      ...defaultConfig,
+      ...(window.UiIcon || {}),
+    };
+
     const options = this.getOptions({
       name: null,
       icon: null,
@@ -71,7 +69,8 @@ class UiIcon extends HTMLElement {
 
     const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
     const encodedIconName = encodeURIComponent(iconName || '');
-    const urlParams = `?v=${encodeURIComponent(config.version)}`;
+    const version = encodeURIComponent(config.version);
+    const urlParams = `?v=${version}`;
 
     use.setAttribute('href', `${config.filePath}${urlParams}#${encodedIconName}`);
     svg.appendChild(use);
@@ -116,3 +115,7 @@ const sharedStylesText = `
 
 const sharedStyles = new CSSStyleSheet();
 sharedStyles.replaceSync(sharedStylesText);
+
+if (!customElements.get('ui-icon')) {
+  customElements.define('ui-icon', UiIcon);
+}
