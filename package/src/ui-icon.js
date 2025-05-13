@@ -57,13 +57,11 @@ class UiIcon extends HTMLElement {
 
     if (isValidViewbox) {
       svg.setAttribute('viewBox', viewbox);
-      svg.setAttribute('width', size);
-      svg.setAttribute('height', size);
-    } else if (isValidSize) {
+    }
+    if (isValidSize) {
       svg.setAttribute('width', size);
       svg.setAttribute('height', size);
     }
-
     if (isValidRotation) {
       svg.style.transform = `rotate(${rotation}deg)`;
     }
