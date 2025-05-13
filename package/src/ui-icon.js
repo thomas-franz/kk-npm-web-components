@@ -19,7 +19,9 @@ class UiIcon extends HTMLElement {
   }
 
   connectedCallback() {
-    this.render();
+    setTimeout(() => {
+      this.render();
+    }, 20);
   }
 
   render() {
