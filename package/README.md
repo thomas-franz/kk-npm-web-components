@@ -17,7 +17,6 @@ import "kk-web-components";
 
 // Optionally configure UiIcon globally
 window.UiIcon = {
-  version: "1.0",
   filePath: "/icons/iconset.svg",
   defaultSize: 24,
 };
@@ -28,7 +27,7 @@ window.UiIcon = {
 #### `<ui-icon>`
 
 - **Attributes**:
-  - `name`: The name of the icon in the sprite sheet.
+  - `icon`: The name of the icon in the sprite sheet.
   - `size`: The size of the icon (default: `24`).
   - `rotation`: Rotate the icon in degrees (default: `0`).
   - `viewbox`: Optional custom `viewBox` for the SVG.
@@ -36,6 +35,6 @@ window.UiIcon = {
 Example:
 
 ```html
-<ui-icon name="home" size="32" rotation="45"></ui-icon>
-<ui-icon name="settings"></ui-icon>
+<ui-icon icon="home" size="32" rotation="45"></ui-icon>
+<ui-icon icon="settings"></ui-icon>
 ```

@@ -111,6 +111,7 @@ const sharedStylesText = `
   }
   svg {
     display: block;
+    pointer-events: none;
   }
 `;
 
